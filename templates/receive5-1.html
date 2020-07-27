@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" >
+	</head>
+	
+	<body>
+        {% if message1 and message2 != '' %}
+		<h1>{{ message1 }}:{{ message2 }}を受け取りました</h1>
+        {% else %}
+		<h1>入力エラー</h1>
+		{% endif %}
+	</body>
+</html>
