@@ -28,6 +28,7 @@ def index():
     cur.close()
     conn.close()
     return render_template('index.html', list=rows)
+
 @app.route('/send', methods=['POST'])
 def send():
     print(request.files)
@@ -41,7 +42,6 @@ def send():
         image.save('static/uploads/' + image.filename)
     conn = db.connect(**db_param)
     cur = conn.cursor()
-
     stmt = 'SELECT * FROM list WHERE title=%s'
     cur.execute(stmt, (title,))
     rows = cur.fetchall()
@@ -70,6 +70,25 @@ def delete():
     cur.close()
     conn.close()
     return redirect('/')
+
+@app.route('/data', methods=['GET'])
+def data():
+    keyword = request.args.get('keyword')
+    conn = db.connect(**db_param)
+    cur = conn.cursor()
+    if keyword and keyword != "":
+        stmt = 'SELECT * FROM list WHERE title LIKE %s'
+        cur.execute(stmt, ('%'+keyword+'%',))
+    else:
+        stmt = 'SELECT * FROM list'
+        cur.execute(stmt)
+    rows = cur.fetchall()
+    url = 'http://127.0.0.1:5000/static/uploads/'
+    data = []
+    for id, title, price, image in rows:
+        data.append({ 'id':id, 'title':title, 'price':price, 'imade':url+image })
+    ret = '{"result":' + json.dumps(data) + '}'
+    return ret
 
 if __name__=='__main__':
     app.debug = True
